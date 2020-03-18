@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_ranklist">
+
+    <fragment
+        android:id="@+id/navigation_ranklist"
+        android:name="com.example.youyaoqilite.ui.ranklist.RanklistFragment"
+        android:label="@string/title_ranklist"
+        tools:layout="@layout/fragment_ranklist" />
+
+    <fragment
+        android:id="@+id/navigation_search"
+        android:name="com.example.youyaoqilite.ui.search.SearchFragment"
+        android:label="@string/title_search"
+        tools:layout="@layout/fragment_search" />
+
+    <fragment
+        android:id="@+id/navigation_collection"
+        android:name="com.example.youyaoqilite.ui.collection.CollectionsFragment"
+        android:label="@string/title_collection"
+        tools:layout="@layout/fragment_collection" />
+</navigation>

@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">Youyaoqilite</string>
+    <string name="title_ranklist">Ranklist</string>
+    <string name="title_search">Search</string>
+    <string name="title_collection">Collection</string>
+</resources>
