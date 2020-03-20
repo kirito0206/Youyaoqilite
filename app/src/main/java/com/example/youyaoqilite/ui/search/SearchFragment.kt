@@ -7,11 +7,15 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.youyaoqilite.MyApplication
+import com.example.youyaoqilite.R
 import com.example.youyaoqilite.RetrofitRequest.YouYaoQiService
+import com.example.youyaoqilite.adapter.GridAdapter
 import com.example.youyaoqilite.adapter.RecyclerViewAdapter
+import com.example.youyaoqilite.adapter.SearchGridAdapter
 import com.example.youyaoqilite.data.Cartoon
 import com.example.youyaoqilite.data.RankList
 import com.example.youyaoqilite.databinding.FragmentSearchBinding
@@ -26,6 +30,7 @@ class SearchFragment : Fragment() {
 
     private lateinit var fragBinding: FragmentSearchBinding
     private val cartoonList = arrayListOf<Cartoon>()
+    private var viewParent : ViewGroup? = null
     object handler{
         var listSize : Int = 0
         var mHandler : Handler = Handler{false}
@@ -36,19 +41,26 @@ class SearchFragment : Fragment() {
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
+        viewParent = container
         fragBinding = FragmentSearchBinding.inflate(layoutInflater)
 
-        val layoutManager = LinearLayoutManager(activity)
-        fragBinding.searchRecycler.layoutManager = layoutManager
-        fragBinding.searchRecycler.adapter = RecyclerViewAdapter(cartoonList,this)
-        initHandler()
         init()
+        initHandler()
         return fragBinding.root
     }
 
     private fun init(){
         fragBinding.searchButton.text = "搜索"
         fragBinding.searchEdit.hint = "镇魂"
+
+        val layoutManager = LinearLayoutManager(activity)
+        fragBinding.searchRecycler.layoutManager = layoutManager
+        fragBinding.searchRecycler.adapter = RecyclerViewAdapter(cartoonList,this)
+
+        //搜索前的fragment grid
+        fragBinding.currentSearchGrid.adapter = SearchGridAdapter(MyApplication.getContext(),RanklistFragment.handler.textList)
+        fragBinding.historySearchGrid.adapter = SearchGridAdapter(MyApplication.getContext(),RanklistFragment.handler.textList)
+        Log.d("798",RanklistFragment.handler.textList.size.toString())
 
         fragBinding.searchButton.setOnClickListener{
             var searchContent = fragBinding.searchEdit.text.toString()
@@ -59,11 +71,21 @@ class SearchFragment : Fragment() {
     }
 
     private fun initHandler(){
-        RanklistFragment.handler.mHandler = Handler{
-            if (it.what == 2){
+        handler.mHandler = Handler{
+            if (it.what == 1){
+                if(fragBinding.currentSearch.visibility != View.GONE){
+                    fragBinding.currentSearch.visibility = View.GONE
+                    fragBinding.currentSearchGrid.visibility = View.GONE
+                    fragBinding.historySearch.visibility = View.GONE
+                    fragBinding.historySearchGrid.visibility = View.GONE
+                }
                 fragBinding.searchRecycler.adapter!!.notifyDataSetChanged()
                 handler.listSize = cartoonList.size
-                MyApplication.toast("已为您找到"+cartoonList.size+"个相关作品！")
+                Toast.makeText(MyApplication.getContext(),"一共为你找到${cartoonList.size}个作品", Toast.LENGTH_SHORT).show()
+            }
+            else if (it.what == 8){     //点击了搜索
+                initCartoonsWithRetrofit(it.obj.toString())
+                fragBinding.searchEdit.setText(it.obj.toString())
             }
             false
         }

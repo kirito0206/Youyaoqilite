@@ -105,7 +105,7 @@ class DetailActivity : AppCompatActivity() {
                 if (chapters != null) {
                     for (chapterDemo in chapters.data.returnData.chapter_list) {
                         chapterList.add(chapterDemo)
-                        Log.d("456",chapterDemo.name+chapterDemo.smallPlaceCover)
+                        Log.d("456",chapterDemo.name+chapterDemo.smallPlaceCover+chapterDemo.image_total)
                     }
                 }
                 var message = Message()

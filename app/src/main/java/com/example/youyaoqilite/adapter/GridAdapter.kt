@@ -15,9 +15,9 @@ import com.example.youyaoqilite.ui.DetailActivity
 
 class GridAdapter(val context: Context, private var cartoonList: MutableList<Cartoon>?): BaseAdapter() {
 
-    // 单元格的 View
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-        var gridBinding = ItemGridLayoutBinding.inflate(LayoutInflater.from(parent?.context), parent, false)
+            // 单元格的 View
+            override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
+                var gridBinding = ItemGridLayoutBinding.inflate(LayoutInflater.from(parent?.context), parent, false)
 
         if (convertView == null) {
             var data = cartoonList?.get(position)

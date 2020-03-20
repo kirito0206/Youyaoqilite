@@ -29,6 +29,7 @@ class RanklistFragment : Fragment(),SwipeRefreshLayout.OnRefreshListener{
     private val cartoonList = arrayListOf<Cartoon>()
     object handler{
         var page : Int = 0
+        var textList = ArrayList<String>()
         var mHandler : Handler = Handler{false}
     }
 
@@ -89,6 +90,8 @@ class RanklistFragment : Fragment(),SwipeRefreshLayout.OnRefreshListener{
                     Log.d("123",comic.cover+comic.name+comic.tags[0]+comic.description)
                     var c0 = Cartoon(comic.name,comic.cover,comic.tags[0],comic.description,comic.comicId)
                     cartoonList.add(c0)
+                    if (handler.textList.size <10)
+                        handler.textList.add(comic.name)
                 }
                 var message = Message()
                 message.what = 1

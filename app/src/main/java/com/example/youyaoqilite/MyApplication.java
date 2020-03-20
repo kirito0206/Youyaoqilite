@@ -16,8 +16,4 @@ public class MyApplication extends Application {
     public static Context getContext(){
         return context;
     }
-
-    public static void toast(String content){
-        Toast.makeText(context,content,Toast.LENGTH_SHORT).show();
-    }
 }
