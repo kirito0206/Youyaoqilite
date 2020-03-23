@@ -1,7 +1,5 @@
 package com.example.youyaoqilite.data
 
-import com.google.gson.annotations.SerializedName
-
 data class Chapters(
     val `data`: ChapterData
 )
@@ -17,5 +15,6 @@ data class ChapterReturnData(
 data class Chapter(
     val image_total: String,
     val name: String,
-    val smallPlaceCover: String
+    val smallPlaceCover: String,
+    val chapter_id: String
 )

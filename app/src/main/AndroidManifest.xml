@@ -13,7 +13,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ui.DetailActivity"></activity>
+        <activity android:name=".ui.ReadActivity" />
+        <activity android:name=".ui.DetailActivity" />
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name">

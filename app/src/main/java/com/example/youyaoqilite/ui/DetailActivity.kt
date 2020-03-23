@@ -67,7 +67,6 @@ class DetailActivity : AppCompatActivity() {
     private fun initHandler(){
         handler.mHandler = Handler{
             if (it.what == 1){
-                Log.d("123",chapterList.size.toString())
                 activityBinding.detailChapterRecycler.adapter!!.notifyDataSetChanged()
             }
             else if(it.what == 2){

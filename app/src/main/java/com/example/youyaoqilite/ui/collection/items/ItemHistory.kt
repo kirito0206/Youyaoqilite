@@ -8,7 +8,6 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.youyaoqilite.MyApplication
 import com.example.youyaoqilite.adapter.RecyclerViewAdapter
-import com.example.youyaoqilite.data.Cartoon
 import com.example.youyaoqilite.databinding.FragmentItemHistoryBinding
 import com.example.youyaoqilite.greendao.CartoonDaoOpe
 
