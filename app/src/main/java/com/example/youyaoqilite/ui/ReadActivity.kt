@@ -21,12 +21,15 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
+import kotlin.collections.ArrayList
 
 class ReadActivity : AppCompatActivity() {
 
     private lateinit var fragBinding: ActivityReadBinding
     private var imageList = ArrayList<ImageItem>()
-
+    private var chapterIdList = ArrayList<String>()
+    private var chapterId = String()
+    private var flag = true
     object handler{
         var mHandler : Handler = Handler{false}
     }
@@ -47,8 +50,8 @@ class ReadActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         fragBinding = ActivityReadBinding.inflate(layoutInflater)
         setContentView(fragBinding.root)
-        var chapterId : String? = intent.getStringExtra("chapter_id")
-        var imageToTal : String? = intent.getStringExtra("image_total")
+        chapterId  = intent.getStringExtra("chapter_id")
+        chapterIdList = intent.getStringArrayListExtra("chapter_id_list")
         initHandler()
         if (chapterId != null)
         initImagesWithRetrofit(chapterId)
@@ -58,11 +61,19 @@ class ReadActivity : AppCompatActivity() {
         var viewpager = fragBinding.root.findViewById<ViewPager2>(R.id.read_pager)
         viewpager.adapter = object : FragmentStateAdapter(this) {
             override fun getItemCount(): Int {
-                Log.d("image",imageList.size.toString())
                 return imageList.size
             }
 
             override fun createFragment(position: Int): Fragment {
+                if (position == imageList.size-3){
+                    if (chapterIdList != null){
+                        var chapterIdNext = chapterIdList.indexOf(chapterId)+1
+                        if (chapterIdNext != chapterIdList.size){
+                            chapterId = chapterIdList[chapterIdNext+1]
+                            initImagesWithRetrofit(chapterIdList[chapterIdNext])
+                        }
+                    }
+                }
                 return ReadFragment(imageList[position].location)
             }
         }
@@ -116,9 +127,12 @@ class ReadActivity : AppCompatActivity() {
                         imageList.add(imageDemo)
                     }
                 }
-                var message = Message()
-                message.what = 1
-                handler.mHandler.sendMessage(message)
+                if (flag){
+                    flag = false
+                    var message = Message()
+                    message.what = 1
+                    handler.mHandler.sendMessage(message)
+                }
             }
         })
     }

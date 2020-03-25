@@ -21,7 +21,7 @@ class ItemCollection : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         fragBinding = FragmentItemCollectionBinding.inflate(layoutInflater)
-        var cartoonList = CartoonDaoOpe.getInstance().queryAll(MyApplication.getContext())
+        var cartoonList = CartoonDaoOpe.getInstance().queryCollectionAll(MyApplication.getContext())
         fragBinding.gridView.adapter = GridAdapter(MyApplication.getContext(),cartoonList)
 
         return fragBinding.root

@@ -11,11 +11,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.youyaoqilite.MyApplication
 import com.example.youyaoqilite.R
+import com.example.youyaoqilite.data.Cartoon
 import com.example.youyaoqilite.data.Chapter
 import com.example.youyaoqilite.databinding.ItemChaptersLayoutBinding
+import com.example.youyaoqilite.greendao.CartoonDaoOpe
 import com.example.youyaoqilite.ui.ReadActivity
 
-class ChapterAdapter(private val chapterList: MutableList<Chapter>, val context: Context) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class ChapterAdapter(private val chapterList: MutableList<Chapter>, val context: Context,val cartoon: Cartoon) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         var binding = ItemChaptersLayoutBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -23,10 +25,12 @@ class ChapterAdapter(private val chapterList: MutableList<Chapter>, val context:
         holder.itemView.setOnClickListener(View.OnClickListener {
             var position = holder.adapterPosition
             var chapter = chapterList[position]
+            cartoon.chapterid = chapter.chapter_id
+            CartoonDaoOpe.getInstance().insertHistoryData(context,cartoon)
             var intent = Intent()
             intent.setClass(MyApplication.getContext(),ReadActivity::class.java)
             intent.putExtra("chapter_id",chapter.chapter_id)
-            intent.putExtra("image_total",chapter.image_total)
+            intent.putStringArrayListExtra("chapter_id_list",chapterToString(chapterList as ArrayList<Chapter>))
             intent.flags = FLAG_ACTIVITY_NEW_TASK
             MyApplication.getContext().startActivity(intent)
         })
@@ -48,5 +52,13 @@ class ChapterAdapter(private val chapterList: MutableList<Chapter>, val context:
             Glide.with(MyApplication.getContext()).load(data.smallPlaceCover).error(R.mipmap.ic_launcher).override(250, 167).into(binding.chapterCover)
             binding.chapterName.text = data.name
         }
+    }
+
+    private fun chapterToString(chapterList: ArrayList<Chapter>) : ArrayList<String>{
+        var chapterIdList = ArrayList<String>()
+        for (chapter in chapterList){
+            chapterIdList.add(chapter.chapter_id)
+        }
+        return chapterIdList
     }
 }

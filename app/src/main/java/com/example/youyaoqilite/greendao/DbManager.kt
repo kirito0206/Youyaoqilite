@@ -8,13 +8,16 @@ import com.example.youyaoqilite.data.DaoSession
 class DbManager private constructor(mContext: Context) {
 
     private val DB_NAME = "cartoon.db"
+
     private var mDevOpenHelper: DaoMaster.DevOpenHelper? = null
+
     private var mDaoMaster: DaoMaster? = null
     private var mDaoSession: DaoSession? = null
 
     init {
         // 初始化数据库信息
         mDevOpenHelper = DaoMaster.DevOpenHelper(mContext, DB_NAME)
+
         getDaoMaster(mContext)
         getDaoSession(mContext)
     }
@@ -45,7 +48,7 @@ class DbManager private constructor(mContext: Context) {
         if (null == mDevOpenHelper) {
             getInstance(context)
         }
-        return mDevOpenHelper?.readableDatabase
+        return mDevOpenHelper?.writableDatabase
     }
 
     /**
@@ -54,11 +57,10 @@ class DbManager private constructor(mContext: Context) {
      * @param context
      * @return
      */
-    fun getWritableDatabase(context: Context): SQLiteDatabase? {
+    private fun getWritableDatabase(context: Context): SQLiteDatabase? {
         if (null == mDevOpenHelper) {
             getInstance(context)
         }
-
         return mDevOpenHelper?.writableDatabase
     }
 
@@ -68,7 +70,7 @@ class DbManager private constructor(mContext: Context) {
      * @param context
      * @return
      */
-    fun getDaoMaster(context: Context): DaoMaster? {
+    private fun getDaoMaster(context: Context): DaoMaster? {
         if (null == mDaoMaster) {
             synchronized(DbManager::class.java) {
                 if (null == mDaoMaster) {
@@ -91,7 +93,6 @@ class DbManager private constructor(mContext: Context) {
                 mDaoSession = getDaoMaster(context)?.newSession()
             }
         }
-
         return mDaoSession
     }
 }

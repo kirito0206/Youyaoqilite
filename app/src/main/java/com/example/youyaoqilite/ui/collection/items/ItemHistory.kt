@@ -21,7 +21,7 @@ class ItemHistory : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         fragBinding = FragmentItemHistoryBinding.inflate(layoutInflater)
-        var cartoonList = CartoonDaoOpe.getInstance().queryAll(MyApplication.getContext())
+        var cartoonList = CartoonDaoOpe.getInstance().queryHistoryAll(MyApplication.getContext())
         val layoutManager = LinearLayoutManager(activity)
         fragBinding.historyRecyclerView.layoutManager = layoutManager
         if (cartoonList != null)

@@ -1,5 +1,6 @@
 package com.example.youyaoqilite.ui
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
@@ -7,15 +8,19 @@ import android.os.Message
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
+import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.example.youyaoqilite.MyApplication
 import com.example.youyaoqilite.R
 import com.example.youyaoqilite.RetrofitRequest.YouYaoQiService
 import com.example.youyaoqilite.adapter.ChapterAdapter
 import com.example.youyaoqilite.adapter.RecyclerViewAdapter
+import com.example.youyaoqilite.data.Cartoon
 import com.example.youyaoqilite.data.Chapter
 import com.example.youyaoqilite.data.Chapters
 import com.example.youyaoqilite.databinding.ActivityDetailBinding
+import com.example.youyaoqilite.greendao.CartoonDaoOpe
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -58,10 +63,27 @@ class DetailActivity : AppCompatActivity() {
         setSupportActionBar(activityBinding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         activityBinding.collapsingToolbar.title = name
+        //按钮设置跳跃至历史记录
+        activityBinding.floutButton.setOnClickListener(View.OnClickListener {
+            if (chapterList.size != 0){
+                var intentTo = Intent()
+                intentTo.setClass(MyApplication.getContext(),ReadActivity::class.java)
+                if (name != null){
+                    var list = CartoonDaoOpe.getInstance().queryHistoryForName(MyApplication.getContext(),name)
+                    if (list != null && list.size != 0)
+                        intentTo.putExtra("chapter_id",list[0].chapterid)
+                    else
+                        intentTo.putExtra("chapter_id",chapterList[0].chapter_id)
+                }
+                intentTo.putStringArrayListExtra("chapter_id_list",chapterToString(chapterList))
+                intentTo.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                MyApplication.getContext().startActivity(intentTo)
+            }
+        })
 
         val layoutManager = LinearLayoutManager(this)
         activityBinding.detailChapterRecycler.layoutManager = layoutManager
-        activityBinding.detailChapterRecycler.adapter = ChapterAdapter(chapterList,this)
+        activityBinding.detailChapterRecycler.adapter = ChapterAdapter(chapterList,this, Cartoon(name,cover,tags,description,comicid,"",false,false))
     }
 
     private fun initHandler(){
@@ -104,7 +126,7 @@ class DetailActivity : AppCompatActivity() {
                 if (chapters != null) {
                     for (chapterDemo in chapters.data.returnData.chapter_list) {
                         chapterList.add(chapterDemo)
-                        Log.d("456",chapterDemo.name+chapterDemo.smallPlaceCover+chapterDemo.image_total)
+                        //Log.d("456",chapterDemo.name+chapterDemo.smallPlaceCover+chapterDemo.image_total+"*"+chapterDemo.chapter_id)
                     }
                 }
                 var message = Message()
@@ -112,5 +134,13 @@ class DetailActivity : AppCompatActivity() {
                 handler.mHandler.sendMessage(message)
             }
         })
+    }
+
+    private fun chapterToString(chapterList: ArrayList<Chapter>) : ArrayList<String>{
+        var chapterIdList = ArrayList<String>()
+        for (chapter in chapterList){
+            chapterIdList.add(chapter.chapter_id)
+        }
+        return chapterIdList
     }
 }

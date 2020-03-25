@@ -27,6 +27,9 @@ public class CartoonDao extends AbstractDao<Cartoon, String> {
         public final static Property Tags = new Property(2, String.class, "tags", false, "TAGS");
         public final static Property Description = new Property(3, String.class, "description", false, "DESCRIPTION");
         public final static Property Comicid = new Property(4, String.class, "comicid", false, "COMICID");
+        public final static Property Chapterid = new Property(5, String.class, "chapterid", false, "CHAPTERID");
+        public final static Property Collected = new Property(6, boolean.class, "collected", false, "COLLECTED");
+        public final static Property History = new Property(7, boolean.class, "history", false, "HISTORY");
     }
 
 
@@ -46,7 +49,10 @@ public class CartoonDao extends AbstractDao<Cartoon, String> {
                 "\"COVER\" TEXT," + // 1: cover
                 "\"TAGS\" TEXT," + // 2: tags
                 "\"DESCRIPTION\" TEXT," + // 3: description
-                "\"COMICID\" TEXT);"); // 4: comicid
+                "\"COMICID\" TEXT," + // 4: comicid
+                "\"CHAPTERID\" TEXT," + // 5: chapterid
+                "\"COLLECTED\" INTEGER NOT NULL ," + // 6: collected
+                "\"HISTORY\" INTEGER NOT NULL );"); // 7: history
     }
 
     /** Drops the underlying database table. */
@@ -83,6 +89,13 @@ public class CartoonDao extends AbstractDao<Cartoon, String> {
         if (comicid != null) {
             stmt.bindString(5, comicid);
         }
+ 
+        String chapterid = entity.getChapterid();
+        if (chapterid != null) {
+            stmt.bindString(6, chapterid);
+        }
+        stmt.bindLong(7, entity.getCollected() ? 1L: 0L);
+        stmt.bindLong(8, entity.getHistory() ? 1L: 0L);
     }
 
     @Override
@@ -113,6 +126,13 @@ public class CartoonDao extends AbstractDao<Cartoon, String> {
         if (comicid != null) {
             stmt.bindString(5, comicid);
         }
+ 
+        String chapterid = entity.getChapterid();
+        if (chapterid != null) {
+            stmt.bindString(6, chapterid);
+        }
+        stmt.bindLong(7, entity.getCollected() ? 1L: 0L);
+        stmt.bindLong(8, entity.getHistory() ? 1L: 0L);
     }
 
     @Override
@@ -127,7 +147,10 @@ public class CartoonDao extends AbstractDao<Cartoon, String> {
             cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // cover
             cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // tags
             cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // description
-            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4) // comicid
+            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // comicid
+            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // chapterid
+            cursor.getShort(offset + 6) != 0, // collected
+            cursor.getShort(offset + 7) != 0 // history
         );
         return entity;
     }
@@ -139,6 +162,9 @@ public class CartoonDao extends AbstractDao<Cartoon, String> {
         entity.setTags(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
         entity.setDescription(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
         entity.setComicid(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
+        entity.setChapterid(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
+        entity.setCollected(cursor.getShort(offset + 6) != 0);
+        entity.setHistory(cursor.getShort(offset + 7) != 0);
      }
     
     @Override

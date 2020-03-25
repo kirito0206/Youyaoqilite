@@ -30,7 +30,9 @@
             android:id="@+id/search_button"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            android:layout_marginLeft="5dp"
+            android:background="@android:color/transparent"/>
     </LinearLayout>
 
     <TextView
@@ -38,6 +40,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="20dp"
+        android:textColor="#0A0A0A"
+        android:textStyle="bold"
         android:text="大家都在搜"/>
     <GridView
         android:id="@+id/current_search_grid"
@@ -52,6 +56,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="20dp"
+        android:textColor="#0A0A0A"
+        android:textStyle="bold"
         android:text="搜过的漫画都在这里"/>
     <GridView
         android:id="@+id/history_search_grid"

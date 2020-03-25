@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -26,7 +27,6 @@ class RecyclerViewAdapter(private var cartoonList: MutableList<Cartoon>,private 
     private val TYPE_HEADER : Int = 0
     private val TYPE_LIST : Int = 1
     private val TYPE_Footer : Int = 2
-    private var displaySize : Int = if(fragment is SearchFragment && cartoonList.size >= 10)10 else cartoonList.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         if(viewType == TYPE_HEADER)
@@ -75,21 +75,22 @@ class RecyclerViewAdapter(private var cartoonList: MutableList<Cartoon>,private 
             itembinding.cartoonName.text = data.name
             itembinding.cartoonTags.text = data.tags
             itembinding.cartoonDescription.text = data.description
-            if (CartoonDaoOpe.getInstance().queryForName(MyApplication.getContext(),data.name)?.size  != 0){
+            if (CartoonDaoOpe.getInstance().queryCollectedForName(MyApplication.getContext(),data.name)?.size  != 0){
                 itembinding.cartoonCollection.text = "已收藏"
             }else{
                 itembinding.cartoonCollection.text = "收藏"
             }
             itembinding.cartoonCollection.setOnClickListener {
-                if (CartoonDaoOpe.getInstance().queryForName(MyApplication.getContext(),data.name)?.size != 0){
+                if (CartoonDaoOpe.getInstance().queryCollectedForName(MyApplication.getContext(),data.name)?.size != 0){
                     itembinding.cartoonCollection.text = "收藏"
-                    CartoonDaoOpe.getInstance().deleteData(MyApplication.getContext(),data)
-                    Log.d("123",CartoonDaoOpe.getInstance().queryAll(MyApplication.getContext())?.size.toString())
+                    Toast.makeText(MyApplication.getContext(),"已取消收藏！",Toast.LENGTH_SHORT).show()
+                    CartoonDaoOpe.getInstance().deleteCollectedData(MyApplication.getContext(),data)
+                    Log.d("ranklist",CartoonDaoOpe.getInstance().queryCollectionAll(MyApplication.getContext())?.size.toString())
                 }else{
                     itembinding.cartoonCollection.text = "已收藏"
-                    CartoonDaoOpe.getInstance().insertData(MyApplication.getContext(),data)
-                    Log.d("123",CartoonDaoOpe.getInstance().queryAll(MyApplication.getContext())?.size.toString())
-
+                    Toast.makeText(MyApplication.getContext(),"已收藏！",Toast.LENGTH_SHORT).show()
+                    CartoonDaoOpe.getInstance().insertCollectedData(MyApplication.getContext(),data)
+                    Log.d("ranklist",CartoonDaoOpe.getInstance().queryCollectionAll(MyApplication.getContext())?.size.toString())
                 }
             }
         }

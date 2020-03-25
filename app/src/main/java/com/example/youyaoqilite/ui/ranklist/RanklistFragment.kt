@@ -87,8 +87,7 @@ class RanklistFragment : Fragment(),SwipeRefreshLayout.OnRefreshListener{
             override fun onResponse(call: Call<RankList>, response: Response<RankList>) {
                 var ranklist : RankList? = response.body()
                 for (comic in ranklist!!.data.returnData.comics){
-                    Log.d("123",comic.cover+comic.name+comic.tags[0]+comic.description)
-                    var c0 = Cartoon(comic.name,comic.cover,comic.tags[0],comic.description,comic.comicId)
+                    var c0 = Cartoon(comic.name,comic.cover,comic.tags[0],comic.description,comic.comicId,"",false,false)
                     cartoonList.add(c0)
                     if (handler.textList.size <10)
                         handler.textList.add(comic.name)

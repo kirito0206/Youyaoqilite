@@ -23,9 +23,37 @@ class CartoonDaoOpe private constructor() {
      * *
      * @param cartoon
      */
-    fun insertData(context: Context?, cartoon: Cartoon) {
+    fun insertCollectedData(context: Context?, cartoon: Cartoon) {
+        cartoon.collected = true
+        when {
+            queryHistoryForName(context,cartoon.name)?.size != 0 -> {
+                cartoon.history = queryHistoryForName(context,cartoon.name)?.get(0)?.history!!
+                cartoon.chapterid = queryHistoryForName(context,cartoon.name)?.get(0)?.chapterid!!
+                updateData(context,cartoon)
+            }
+            queryCollectedForName(context,cartoon.name)?.size != 0 -> updateData(context,cartoon)
+            else -> DbManager.getInstance(context!!)?.getDaoSession(context)?.cartoonDao?.insert(cartoon)
+        }
+    }
 
-        DbManager.getInstance(context!!)?.getDaoSession(context)?.cartoonDao?.insert(cartoon)
+    /**
+     * 添加数据至数据库
+
+     * @param context
+     * *
+     * @param cartoon
+     */
+    fun insertHistoryData(context: Context?, cartoon: Cartoon) {
+        cartoon.history = true
+        when {
+            queryCollectedForName(context,cartoon.name)?.size != 0 -> {
+                cartoon.collected = queryCollectedForName(context,cartoon.name)?.get(0)?.collected!!
+                cartoon.chapterid = queryCollectedForName(context,cartoon.name)?.get(0)?.chapterid!!
+                updateData(context,cartoon)
+            }
+            queryHistoryForName(context,cartoon.name)?.size != 0 -> updateData(context,cartoon)
+            else -> DbManager.getInstance(context!!)?.getDaoSession(context)?.cartoonDao?.insert(cartoon)
+        }
     }
 
 
@@ -62,8 +90,25 @@ class CartoonDaoOpe private constructor() {
      * *
      * @param cartoon 删除具体内容
      */
-    fun deleteData(context: Context?, cartoon: Cartoon) {
-        DbManager.getInstance(context!!)?.getDaoSession(context)?.cartoonDao?.delete(cartoon)
+    fun deleteCollectedData(context: Context?, cartoon: Cartoon) {
+        cartoon.collected = false
+        if (queryHistoryForName(context,cartoon.name)?.size != 0){
+            cartoon.history = queryHistoryForName(context,cartoon.name)?.get(0)?.history!!
+            cartoon.chapterid = queryHistoryForName(context,cartoon.name)?.get(0)?.chapterid!!
+        }
+        updateData(context,cartoon)
+    }
+
+    /**
+     * 删除数据至数据库
+
+     * @param context
+     * *
+     * @param cartoon 删除具体内容
+     */
+    fun deleteHistoryData(context: Context?, cartoon: Cartoon) {
+        cartoon.history = false
+        updateData(context,cartoon)
     }
 
     /**
@@ -95,22 +140,36 @@ class CartoonDaoOpe private constructor() {
      */
     fun updateData(context: Context?, cartoon: Cartoon) {
         DbManager.getInstance(context!!)?.getDaoSession(context)?.cartoonDao?.update(cartoon)
+        if (!cartoon.history && !cartoon.collected)
+            DbManager.getInstance(context!!)?.getDaoSession(context)?.cartoonDao?.delete(cartoon)
     }
 
 
     /**
-     * 查询所有数据
+     * 查询收藏所有数据
 
      * @param context
      * *
      * @return
      */
-    fun queryAll(context: Context?): MutableList<Cartoon>? {
+    fun queryCollectionAll(context: Context?): MutableList<Cartoon>? {
         val builder = DbManager.getInstance(context!!)?.getDaoSession(context)?.cartoonDao?.queryBuilder()
-        return builder?.build()?.list()
+        return builder?.where(CartoonDao.Properties.Collected.eq(true))?.list()
     }
 
-    fun queryForName(context: Context?, name:String): MutableList<Cartoon>? {
+    /**
+     * 查询历史纪录所有数据
+
+     * @param context
+     * *
+     * @return
+     */
+    fun queryHistoryAll(context: Context?): MutableList<Cartoon>? {
+        val builder = DbManager.getInstance(context!!)?.getDaoSession(context)?.cartoonDao?.queryBuilder()
+        return builder?.where(CartoonDao.Properties.History.eq(true))?.list()
+    }
+
+    fun queryCollectedForName(context: Context?, name:String): MutableList<Cartoon>? {
         val builder = DbManager.getInstance(context!!)?.getDaoSession(context)?.cartoonDao?.queryBuilder()
         /**
          * 返回当前id的数据集合,当然where(这里面可以有多组，做为条件);
@@ -120,6 +179,19 @@ class CartoonDaoOpe private constructor() {
          */
         // Query<Student> build = builder.where(StudentDao.Properties.Id.eq(id)).build();
         // List<Student> list = build.list();
-        return builder?.where(CartoonDao.Properties.Name.eq(name))?.list()
+        return builder?.where(CartoonDao.Properties.Name.eq(name))?.where(CartoonDao.Properties.Collected.eq(true))?.list()
+    }
+
+    fun queryHistoryForName(context: Context?, name:String): MutableList<Cartoon>? {
+        val builder = DbManager.getInstance(context!!)?.getDaoSession(context)?.cartoonDao?.queryBuilder()
+        /**
+         * 返回当前id的数据集合,当然where(这里面可以有多组，做为条件);
+         * 这里build.list()；与where(StudentDao.Properties.Id.eq(id)).list()结果是一样的；
+         * 在QueryBuilder类中list()方法return build().list();
+
+         */
+        // Query<Student> build = builder.where(StudentDao.Properties.Id.eq(id)).build();
+        // List<Student> list = build.list();
+        return builder?.where(CartoonDao.Properties.Name.eq(name))?.where(CartoonDao.Properties.History.eq(true))?.list()
     }
 }

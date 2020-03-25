@@ -1,5 +1,7 @@
 package com.example.youyaoqilite.ui.search
 
+import android.content.Context.MODE_PRIVATE
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
@@ -31,6 +33,10 @@ class SearchFragment : Fragment() {
     private lateinit var fragBinding: FragmentSearchBinding
     private val cartoonList = arrayListOf<Cartoon>()
     private var viewParent : ViewGroup? = null
+    private var pref = MyApplication.getContext().getSharedPreferences("history",MODE_PRIVATE)
+    private var editor = MyApplication.getContext().getSharedPreferences("history",MODE_PRIVATE).edit()
+
+
     object handler{
         var listSize : Int = 0
         var mHandler : Handler = Handler{false}
@@ -59,11 +65,19 @@ class SearchFragment : Fragment() {
 
         //搜索前的fragment grid
         fragBinding.currentSearchGrid.adapter = SearchGridAdapter(MyApplication.getContext(),RanklistFragment.handler.textList)
-        fragBinding.historySearchGrid.adapter = SearchGridAdapter(MyApplication.getContext(),RanklistFragment.handler.textList)
-        Log.d("798",RanklistFragment.handler.textList.size.toString())
+        //搜索历史
+        var search = pref.getString("historySearch","")
+        var stringList  = search?.split('\n')
+        fragBinding.historySearchGrid.adapter = SearchGridAdapter(MyApplication.getContext(),
+            stringList as MutableList<String>?
+        )
 
         fragBinding.searchButton.setOnClickListener{
             var searchContent = fragBinding.searchEdit.text.toString()
+            var searchbefore = pref.getString("historySearch","")
+
+            editor.putString("historySearch",searchContent + "\n" + searchbefore)
+            editor.apply()
             cartoonList.clear()
             handler.listSize = 0
             initCartoonsWithRetrofit(searchContent)
@@ -108,8 +122,7 @@ class SearchFragment : Fragment() {
             override fun onResponse(call: Call<RankList>, response: Response<RankList>) {
                 var ranklist : RankList? = response.body()
                 for (comic in ranklist!!.data.returnData.comics){
-                    Log.d("123",comic.cover+comic.name+comic.tags[0]+comic.description)
-                    var c0 = Cartoon(comic.name,comic.cover,comic.tags[0],comic.description,comic.comicId)
+                    var c0 = Cartoon(comic.name,comic.cover,comic.tags[0],comic.description,comic.comicId,"",false,false)
                     cartoonList.add(c0)
                 }
                 var message = Message()

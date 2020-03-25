@@ -23,6 +23,7 @@ class GridAdapter(val context: Context, private var cartoonList: MutableList<Car
             var data = cartoonList?.get(position)
             Glide.with(MyApplication.getContext()).load(data?.cover).error(R.mipmap.ic_launcher).override(1200, 400).into(gridBinding.gridImage)
             gridBinding.gridName.text = data?.name
+            //gridBinding.gridHistory.text = data?.
             gridBinding.root.setOnClickListener(View.OnClickListener {
                 var cartoon = cartoonList?.get(position)
                 var intent = Intent()
