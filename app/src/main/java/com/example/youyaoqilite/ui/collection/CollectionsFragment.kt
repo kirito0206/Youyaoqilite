@@ -35,8 +35,7 @@ class CollectionsFragment : Fragment() {
     }
 
     private fun initViewPager(){
-        var viewpager = fragBinding.root.findViewById<ViewPager2>(R.id.view_pager)
-        viewpager.adapter = object : FragmentStateAdapter(this) {
+        fragBinding.viewPager.adapter = object : FragmentStateAdapter(this) {
             override fun getItemCount(): Int {
                 return 2
             }
@@ -48,7 +47,7 @@ class CollectionsFragment : Fragment() {
             }
         }
 
-        viewpager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+        fragBinding.viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageScrollStateChanged(state: Int) {
                 super.onPageScrollStateChanged(state)
                 Log.d("123", "onPageScrollStateChanged: $state")
@@ -69,14 +68,14 @@ class CollectionsFragment : Fragment() {
                 Log.i("123", "onPageSelected：$position")
             }
         })
-        // 生成模拟数据
+        /*// 生成模拟数据
         lifecycle.addObserver(object : LifecycleObserver {
             @OnLifecycleEvent(Lifecycle.Event.ON_START)
             fun onStart() {
                 //refreshListFragment(listDataFragment)
                 viewpager.adapter?.notifyDataSetChanged()
             }
-        })
+        })*/
     }
 
     private fun initTabViewPager() {

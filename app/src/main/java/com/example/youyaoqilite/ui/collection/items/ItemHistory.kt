@@ -24,8 +24,14 @@ class ItemHistory : Fragment() {
         var cartoonList = CartoonDaoOpe.getInstance().queryHistoryAll(MyApplication.getContext())
         val layoutManager = LinearLayoutManager(activity)
         fragBinding.historyRecyclerView.layoutManager = layoutManager
-        if (cartoonList != null)
-        fragBinding.historyRecyclerView.adapter = RecyclerViewAdapter(cartoonList,this)
+
+        if (cartoonList != null){
+            if (cartoonList.size != 0){
+                fragBinding.historyImage.visibility = View.GONE
+                fragBinding.historyText.visibility = View.GONE
+                fragBinding.historyRecyclerView.adapter = RecyclerViewAdapter(cartoonList,this)
+            }
+        }
 
         return fragBinding.root
     }

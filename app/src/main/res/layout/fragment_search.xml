@@ -42,6 +42,8 @@
         android:textSize="20dp"
         android:textColor="#0A0A0A"
         android:textStyle="bold"
+        android:paddingTop="30dp"
+        android:layout_marginBottom="10dp"
         android:text="大家都在搜"/>
     <GridView
         android:id="@+id/current_search_grid"
@@ -58,6 +60,8 @@
         android:textSize="20dp"
         android:textColor="#0A0A0A"
         android:textStyle="bold"
+        android:paddingTop="30dp"
+        android:layout_marginBottom="10dp"
         android:text="搜过的漫画都在这里"/>
     <GridView
         android:id="@+id/history_search_grid"

@@ -13,14 +13,23 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.youyaoqilite.MyApplication
 import com.example.youyaoqilite.R
+import com.example.youyaoqilite.RetrofitRequest.YouYaoQiService
 import com.example.youyaoqilite.data.Cartoon
+import com.example.youyaoqilite.data.Chapters
 import com.example.youyaoqilite.databinding.FooterBinding
 import com.example.youyaoqilite.databinding.HeaderBinding
 import com.example.youyaoqilite.databinding.ItemCartoonLayoutBinding
 import com.example.youyaoqilite.greendao.CartoonDaoOpe
 import com.example.youyaoqilite.ui.DetailActivity
+import com.example.youyaoqilite.ui.ReadActivity
+import com.example.youyaoqilite.ui.collection.items.ItemHistory
 import com.example.youyaoqilite.ui.ranklist.RanklistFragment
 import com.example.youyaoqilite.ui.search.SearchFragment
+import retrofit2.Call
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory
+import retrofit2.converter.gson.GsonConverterFactory
 
 class RecyclerViewAdapter(private var cartoonList: MutableList<Cartoon>,private var fragment: Fragment) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -41,7 +50,7 @@ class RecyclerViewAdapter(private var cartoonList: MutableList<Cartoon>,private 
         }
 
         var itemBinding = ItemCartoonLayoutBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        var holder = ViewHolder(itemBinding)
+        var holder = ViewHolder(itemBinding,fragment)
         holder.itemView.setOnClickListener(View.OnClickListener {
             var position = holder.adapterPosition
             var cartoon = cartoonList[position-1]
@@ -68,31 +77,77 @@ class RecyclerViewAdapter(private var cartoonList: MutableList<Cartoon>,private 
         }
     }
 
-    class ViewHolder(private val itembinding: ItemCartoonLayoutBinding)
+    class ViewHolder(private val itembinding: ItemCartoonLayoutBinding,var fragment: Fragment)
         : RecyclerView.ViewHolder(itembinding.root) {
+        var chapterList = ArrayList<String>()
+
         fun bind(data: Cartoon) {
+            initChaptersWithRetrofit(data.comicid)
             Glide.with(MyApplication.getContext()).load(data.cover).error(R.mipmap.ic_launcher).override(1200, 400).into(itembinding.cartoonCover)
             itembinding.cartoonName.text = data.name
             itembinding.cartoonTags.text = data.tags
             itembinding.cartoonDescription.text = data.description
-            if (CartoonDaoOpe.getInstance().queryCollectedForName(MyApplication.getContext(),data.name)?.size  != 0){
-                itembinding.cartoonCollection.text = "已收藏"
+            if (fragment is ItemHistory){
+                itembinding.cartoonCollection.text = "继续观看->"
+                itembinding.cartoonCollection.setOnClickListener {
+                    var cartoon = CartoonDaoOpe.getInstance().queryHistoryForName(MyApplication.getContext(),data.name)
+                        ?.get(0)
+                    var intent = Intent()
+                    intent.setClass(MyApplication.getContext(), ReadActivity::class.java)
+                    if (cartoon != null) {
+                        intent.putExtra("chapter_id",cartoon.chapterid)
+                    }else
+                        intent.putExtra("chapter_id",data.chapterid)
+                    intent.putStringArrayListExtra("chapter_id_list",chapterList)
+                    intent.flags = FLAG_ACTIVITY_NEW_TASK
+                    MyApplication.getContext().startActivity(intent)
+                }
             }else{
-                itembinding.cartoonCollection.text = "收藏"
-            }
-            itembinding.cartoonCollection.setOnClickListener {
-                if (CartoonDaoOpe.getInstance().queryCollectedForName(MyApplication.getContext(),data.name)?.size != 0){
-                    itembinding.cartoonCollection.text = "收藏"
-                    Toast.makeText(MyApplication.getContext(),"已取消收藏！",Toast.LENGTH_SHORT).show()
-                    CartoonDaoOpe.getInstance().deleteCollectedData(MyApplication.getContext(),data)
-                    Log.d("ranklist",CartoonDaoOpe.getInstance().queryCollectionAll(MyApplication.getContext())?.size.toString())
-                }else{
+                if (CartoonDaoOpe.getInstance().queryCollectedForName(MyApplication.getContext(),data.name)?.size  != 0){
                     itembinding.cartoonCollection.text = "已收藏"
-                    Toast.makeText(MyApplication.getContext(),"已收藏！",Toast.LENGTH_SHORT).show()
-                    CartoonDaoOpe.getInstance().insertCollectedData(MyApplication.getContext(),data)
-                    Log.d("ranklist",CartoonDaoOpe.getInstance().queryCollectionAll(MyApplication.getContext())?.size.toString())
+                }else{
+                    itembinding.cartoonCollection.text = "收藏"
+                }
+                itembinding.cartoonCollection.setOnClickListener {
+                    if (CartoonDaoOpe.getInstance().queryCollectedForName(MyApplication.getContext(),data.name)?.size != 0){
+                        itembinding.cartoonCollection.text = "收藏"
+                        Toast.makeText(MyApplication.getContext(),"已取消收藏！",Toast.LENGTH_SHORT).show()
+                        CartoonDaoOpe.getInstance().deleteCollectedData(MyApplication.getContext(),data)
+                        Log.d("ranklist",CartoonDaoOpe.getInstance().queryCollectionAll(MyApplication.getContext())?.size.toString())
+                    }else{
+                        itembinding.cartoonCollection.text = "已收藏"
+                        Toast.makeText(MyApplication.getContext(),"已收藏！",Toast.LENGTH_SHORT).show()
+                        CartoonDaoOpe.getInstance().insertCollectedData(MyApplication.getContext(),data)
+                        Log.d("ranklist",CartoonDaoOpe.getInstance().queryCollectionAll(MyApplication.getContext())?.size.toString())
+                    }
                 }
             }
+        }
+
+        private fun initChaptersWithRetrofit(comicid: String){
+            var retrofit  = Retrofit.Builder()
+                .baseUrl("https://app.u17.com/v3/appV3_3/android/phone/") //设置网络请求的Url地址
+                .addConverterFactory(GsonConverterFactory.create()) //设置数据解析器
+                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .build()
+
+            //创建请求接口类
+            var youyaoqiService = retrofit.create(YouYaoQiService::class.java)
+            youyaoqiService.detailChapters("xiaomi","7de42d2e","450010","MI+6","f5c9b6c9284551ad",comicid).enqueue(object : retrofit2.Callback<Chapters> {
+                override fun onFailure(call: Call<Chapters>, t: Throwable) {
+                    t.printStackTrace()
+                }
+
+                override fun onResponse(call: Call<Chapters>, response: Response<Chapters>) {
+                    var chapters : Chapters? = response.body()
+                    if (chapters != null) {
+                        for (chapterDemo in chapters.data.returnData.chapter_list) {
+                            chapterList.add(chapterDemo.chapter_id)
+                            //Log.d("456",chapterDemo.name+chapterDemo.smallPlaceCover+chapterDemo.image_total+"*"+chapterDemo.chapter_id)
+                        }
+                    }
+                }
+            })
         }
     }
 

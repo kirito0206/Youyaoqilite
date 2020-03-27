@@ -22,7 +22,13 @@ class ItemCollection : Fragment() {
     ): View? {
         fragBinding = FragmentItemCollectionBinding.inflate(layoutInflater)
         var cartoonList = CartoonDaoOpe.getInstance().queryCollectionAll(MyApplication.getContext())
-        fragBinding.gridView.adapter = GridAdapter(MyApplication.getContext(),cartoonList)
+        if (cartoonList != null) {
+            if (cartoonList.size != 0){
+                fragBinding.collectionImage.visibility = View.GONE
+                fragBinding.collectionText.visibility = View.GONE
+                fragBinding.gridView.adapter = GridAdapter(MyApplication.getContext(),cartoonList)
+            }
+        }
 
         return fragBinding.root
     }

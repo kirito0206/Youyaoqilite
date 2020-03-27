@@ -1,5 +1,6 @@
 package com.example.youyaoqilite.ui
 
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -20,9 +21,7 @@ class ReadFragment(var image : String) : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         fragBinding = FragmentReadBinding.inflate(layoutInflater)
-        MyApplication.statusBarHide(activity)
         Glide.with(this).load(image).error(R.mipmap.ic_launcher).into(fragBinding.readImage)
-
         return fragBinding.root
     }
 }
