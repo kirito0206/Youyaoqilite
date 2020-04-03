@@ -14,8 +14,8 @@ import com.example.youyaoqilite.R
 import com.example.youyaoqilite.RetrofitRequest.YouYaoQiService
 import com.example.youyaoqilite.data.ImageItem
 import com.example.youyaoqilite.data.ImagesObtain
-import com.example.youyaoqilite.databinding.ActivityReadBinding
 import com.example.youyaoqilite.greendao.CartoonDaoOpe
+import kotlinx.android.synthetic.main.activity_read.*
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -25,7 +25,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class ReadActivity : AppCompatActivity() {
 
-    private lateinit var fragBinding: ActivityReadBinding
+    //private lateinit var fragBinding: ActivityReadBinding
     private var imageList = ArrayList<ImageItem>()
     private var chapterIdList = ArrayList<String>()
     private var chapterId = String()
@@ -49,8 +49,8 @@ class ReadActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        fragBinding = ActivityReadBinding.inflate(layoutInflater)
-        setContentView(fragBinding.root)
+        //fragBinding = ActivityReadBinding.inflate(layoutInflater)
+        setContentView(R.layout.activity_read)
         chapterId  = intent.getStringExtra("chapter_id")
         chapterIdList = intent.getStringArrayListExtra("chapter_id_list")
         initHandler()
@@ -61,7 +61,7 @@ class ReadActivity : AppCompatActivity() {
     }
 
     private fun initViewPager(){
-        fragBinding.readPager.adapter = object : FragmentStateAdapter(this) {
+        read_pager.adapter = object : FragmentStateAdapter(this) {
             override fun getItemCount(): Int {
                 return imageList.size
             }
@@ -81,9 +81,9 @@ class ReadActivity : AppCompatActivity() {
         }
 
         //预加载
-        fragBinding.readPager.offscreenPageLimit = 3
+        read_pager.offscreenPageLimit = 3
 
-        fragBinding.readPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+        read_pager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageScrollStateChanged(state: Int) {
                 super.onPageScrollStateChanged(state)
             }

@@ -10,14 +10,14 @@ import androidx.lifecycle.*
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.example.youyaoqilite.R
-import com.example.youyaoqilite.databinding.FragmentCollectionBinding
 import com.example.youyaoqilite.ui.collection.items.ItemCollection
 import com.example.youyaoqilite.ui.collection.items.ItemHistory
 import com.google.android.material.tabs.TabLayoutMediator
+import kotlinx.android.synthetic.main.fragment_collection.view.*
 
 class CollectionsFragment : Fragment() {
 
-    private lateinit var fragBinding: FragmentCollectionBinding
+    //private lateinit var fragBinding: FragmentCollectionBinding
     private lateinit var itemCollection : Fragment
     private lateinit var itemHistory : Fragment
 
@@ -26,16 +26,18 @@ class CollectionsFragment : Fragment() {
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
-        fragBinding = FragmentCollectionBinding.inflate(layoutInflater)
+        //fragBinding = FragmentCollectionBinding.inflate(layoutInflater)
+        val view = inflater!!.inflate(R.layout.fragment_collection, container, false)
         itemCollection = ItemCollection()
         itemHistory = ItemHistory()
-        initViewPager()
-        initTabViewPager()
-        return fragBinding.root
+        initViewPager(view)
+        initTabViewPager(view)
+        return view
+        //return fragBinding.root
     }
 
-    private fun initViewPager(){
-        fragBinding.viewPager.adapter = object : FragmentStateAdapter(this) {
+    private fun initViewPager(view : View){
+        view.view_pager.adapter = object : FragmentStateAdapter(this) {
             override fun getItemCount(): Int {
                 return 2
             }
@@ -47,7 +49,7 @@ class CollectionsFragment : Fragment() {
             }
         }
 
-        fragBinding.viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+        view.view_pager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageScrollStateChanged(state: Int) {
                 super.onPageScrollStateChanged(state)
                 Log.d("123", "onPageScrollStateChanged: $state")
@@ -78,8 +80,8 @@ class CollectionsFragment : Fragment() {
         })*/
     }
 
-    private fun initTabViewPager() {
-        TabLayoutMediator(fragBinding.tabLayout, fragBinding.viewPager,
+    private fun initTabViewPager(view : View) {
+        TabLayoutMediator(view.tab_layout, view.view_pager,
             TabLayoutMediator.TabConfigurationStrategy { tab, position ->
                 if (position == 0)
                     tab.text = "收藏"

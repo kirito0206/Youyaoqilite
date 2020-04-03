@@ -10,12 +10,13 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.example.youyaoqilite.R
 import com.example.youyaoqilite.RetrofitRequest.YouYaoQiService
 import com.example.youyaoqilite.adapter.RecyclerViewAdapter
 import com.example.youyaoqilite.data.Cartoon
 import com.example.youyaoqilite.data.RankList
-import com.example.youyaoqilite.databinding.FragmentRanklistBinding
 import kotlinx.android.synthetic.main.fragment_ranklist.*
+import kotlinx.android.synthetic.main.fragment_ranklist.view.*
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -25,7 +26,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class RanklistFragment : Fragment(),SwipeRefreshLayout.OnRefreshListener{
 
-    private lateinit var fragBinding: FragmentRanklistBinding
+    //private lateinit var fragBinding: FragmentRanklistBinding
     private val cartoonList = arrayListOf<Cartoon>()
     object handler{
         var page : Int = 0
@@ -45,23 +46,24 @@ class RanklistFragment : Fragment(),SwipeRefreshLayout.OnRefreshListener{
 
         var swipe :SwipeRefreshLayout = root.findViewById(R.id.swiperefresh_layout)
         swipe.setOnRefreshListener(this)*/
-        fragBinding = FragmentRanklistBinding.inflate(layoutInflater)
-
+        //fragBinding = FragmentRanklistBinding.inflate(layoutInflater)
+        val view = inflater!!.inflate(R.layout.fragment_ranklist, container, false)
         val layoutManager = LinearLayoutManager(activity)
-        fragBinding.ranklistRecycleview.layoutManager = layoutManager
-        fragBinding.ranklistRecycleview.adapter = RecyclerViewAdapter(cartoonList,this)
+        view.ranklist_recycleview.layoutManager = layoutManager
+        view.ranklist_recycleview.adapter = RecyclerViewAdapter(cartoonList,this)
         initHandler()
         initCartoonsWithRetrofit("1")
         //下拉刷新
-        fragBinding.swiperefreshLayout.setOnRefreshListener(this)
-        return fragBinding.root
+        view.swiperefresh_layout.setOnRefreshListener(this)
+        return view
+        //return fragBinding.root
     }
 
     private fun initHandler(){
         handler.mHandler = Handler{
             if (it.what == 1){
                 Log.d("123",cartoonList.size.toString())
-                fragBinding.ranklistRecycleview.adapter!!.notifyDataSetChanged()
+                ranklist_recycleview.adapter!!.notifyDataSetChanged()
             }
             else if(it.what == 2){
                 initCartoonsWithRetrofit(handler.page.toString())

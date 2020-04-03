@@ -19,8 +19,8 @@ import com.example.youyaoqilite.adapter.RecyclerViewAdapter
 import com.example.youyaoqilite.data.Cartoon
 import com.example.youyaoqilite.data.Chapter
 import com.example.youyaoqilite.data.Chapters
-import com.example.youyaoqilite.databinding.ActivityDetailBinding
 import com.example.youyaoqilite.greendao.CartoonDaoOpe
+import kotlinx.android.synthetic.main.activity_detail.*
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -30,7 +30,7 @@ import java.lang.StringBuilder
 
 class DetailActivity : AppCompatActivity() {
 
-    private lateinit var activityBinding : ActivityDetailBinding
+    //private lateinit var activityBinding : ActivityDetailBinding
     private var chapterList = ArrayList<Chapter>()
     private lateinit var comicid : String
     object handler{
@@ -39,8 +39,8 @@ class DetailActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        activityBinding = ActivityDetailBinding.inflate(LayoutInflater.from(this))
-        setContentView(activityBinding.root)
+        //activityBinding = ActivityDetailBinding.inflate(LayoutInflater.from(this))
+        setContentView(R.layout.activity_detail)
 
         initView()
         initHandler()
@@ -57,14 +57,14 @@ class DetailActivity : AppCompatActivity() {
         showText.appendln("作品名称：$name")
         showText.appendln("标签内容：$tags")
         showText.appendln("作品简介：$description")
-        activityBinding.detailText.text = showText
-        Glide.with(this).load(cover).error(R.mipmap.ic_launcher).into(activityBinding.detailCover)
+        detail_text.text = showText
+        Glide.with(this).load(cover).error(R.mipmap.ic_launcher).into(detail_cover)
 
-        setSupportActionBar(activityBinding.toolbar)
+        setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        activityBinding.collapsingToolbar.title = name
+        collapsing_toolbar.title = name
         //按钮设置跳跃至历史记录
-        activityBinding.floutButton.setOnClickListener(View.OnClickListener {
+        flout_button.setOnClickListener(View.OnClickListener {
             if (chapterList.size != 0){
                 var intentTo = Intent()
                 intentTo.setClass(MyApplication.getContext(),ReadActivity::class.java)
@@ -82,14 +82,14 @@ class DetailActivity : AppCompatActivity() {
         })
 
         val layoutManager = LinearLayoutManager(this)
-        activityBinding.detailChapterRecycler.layoutManager = layoutManager
-        activityBinding.detailChapterRecycler.adapter = ChapterAdapter(chapterList,this, Cartoon(name,cover,tags,description,comicid,"",false,false))
+        detail_chapter_recycler.layoutManager = layoutManager
+        detail_chapter_recycler.adapter = ChapterAdapter(chapterList,this, Cartoon(name,cover,tags,description,comicid,"",false,false))
     }
 
     private fun initHandler(){
         handler.mHandler = Handler{
             if (it.what == 1){
-                activityBinding.detailChapterRecycler.adapter!!.notifyDataSetChanged()
+                detail_chapter_recycler.adapter!!.notifyDataSetChanged()
             }
             else if(it.what == 2){
                 initChaptersWithRetrofit(comicid)
