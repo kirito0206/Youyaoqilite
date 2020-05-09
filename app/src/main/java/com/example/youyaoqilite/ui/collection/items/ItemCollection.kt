@@ -22,7 +22,7 @@ class ItemCollection : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         //fragBinding = FragmentItemCollectionBinding.inflate(layoutInflater)
-        val view = inflater!!.inflate(R.layout.fragment_item_collection, container, false)
+        val view = inflater.inflate(R.layout.fragment_item_collection, container, false)
         var cartoonList = CartoonDaoOpe.getInstance().queryCollectionAll(MyApplication.getContext())
         if (cartoonList != null) {
             if (cartoonList.size != 0){

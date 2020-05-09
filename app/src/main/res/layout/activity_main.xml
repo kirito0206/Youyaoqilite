@@ -3,7 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/container"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true" >
+
     <fragment
         android:id="@+id/nav_host_fragment"
         android:name="androidx.navigation.fragment.NavHostFragment"
@@ -24,5 +26,7 @@
         android:layout_marginEnd="0dp"
         android:background="?android:attr/windowBackground"
         android:layout_alignParentBottom="true"
+        app:itemIconTint="@drawable/selector_btm_color"
+        app:itemTextColor="@drawable/selector_btm_color"
         app:menu="@menu/bottom_nav_menu" />
 </RelativeLayout>

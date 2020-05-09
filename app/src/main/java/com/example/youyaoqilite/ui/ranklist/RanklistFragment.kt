@@ -5,11 +5,14 @@ import android.os.Handler
 import android.os.Message
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
+import android.view.View.OnTouchListener
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.example.youyaoqilite.MainActivity
 import com.example.youyaoqilite.R
 import com.example.youyaoqilite.RetrofitRequest.YouYaoQiService
 import com.example.youyaoqilite.adapter.RecyclerViewAdapter
@@ -28,6 +31,10 @@ class RanklistFragment : Fragment(),SwipeRefreshLayout.OnRefreshListener{
 
     //private lateinit var fragBinding: FragmentRanklistBinding
     private val cartoonList = arrayListOf<Cartoon>()
+    private var mPosX = 0F
+    private var mPosY = 0F
+    private var mCurPosX = 0F
+    private var mCurPosY = 0F
     object handler{
         var page : Int = 0
         var textList = ArrayList<String>()
@@ -47,7 +54,7 @@ class RanklistFragment : Fragment(),SwipeRefreshLayout.OnRefreshListener{
         var swipe :SwipeRefreshLayout = root.findViewById(R.id.swiperefresh_layout)
         swipe.setOnRefreshListener(this)*/
         //fragBinding = FragmentRanklistBinding.inflate(layoutInflater)
-        val view = inflater!!.inflate(R.layout.fragment_ranklist, container, false)
+        val view = inflater.inflate(R.layout.fragment_ranklist, container, false)
         val layoutManager = LinearLayoutManager(activity)
         view.ranklist_recycleview.layoutManager = layoutManager
         view.ranklist_recycleview.adapter = RecyclerViewAdapter(cartoonList,this)
@@ -55,6 +62,7 @@ class RanklistFragment : Fragment(),SwipeRefreshLayout.OnRefreshListener{
         initCartoonsWithRetrofit("1")
         //下拉刷新
         view.swiperefresh_layout.setOnRefreshListener(this)
+        setGestureListener(view.ranklist_recycleview)
         return view
         //return fragBinding.root
     }
@@ -62,7 +70,6 @@ class RanklistFragment : Fragment(),SwipeRefreshLayout.OnRefreshListener{
     private fun initHandler(){
         handler.mHandler = Handler{
             if (it.what == 1){
-                Log.d("123",cartoonList.size.toString())
                 ranklist_recycleview.adapter!!.notifyDataSetChanged()
             }
             else if(it.what == 2){
@@ -107,5 +114,36 @@ class RanklistFragment : Fragment(),SwipeRefreshLayout.OnRefreshListener{
         cartoonList.clear()
         handler.page = 0
         initCartoonsWithRetrofit("1")
+    }
+
+    private fun setGestureListener(vi:View) {
+        vi.setOnTouchListener(OnTouchListener { v, event -> // TODO Auto-generated method stub
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    mPosX = event.x
+                    mPosY = event.y
+                }
+                MotionEvent.ACTION_MOVE -> {
+                    mCurPosX = event.x
+                    mCurPosY = event.y
+                    if (mCurPosY - mPosY > 0
+                        && Math.abs(mCurPosY - mPosY) > 25
+                    ) {
+                        //向下滑動
+                        var msg = Message()
+                        msg.what = 2
+                        MainActivity.handler.mHandler.sendMessage(msg)
+                    } else if (mCurPosY - mPosY < 0
+                        && Math.abs(mCurPosY - mPosY) > 25
+                    ) {
+                        //向上滑动
+                        var msg = Message()
+                        msg.what = 1
+                        MainActivity.handler.mHandler.sendMessage(msg)
+                    }
+                }
+            }
+            false
+        })
     }
 }

@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ranklist_linear"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -11,8 +12,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="30dp"
-        android:layout_margin="5dp"
-        android:text="漫画排行榜"/>
+        android:background="@color/colorAccent"
+        android:textColor="@android:color/white"
+        android:fontFamily="sans-serif-medium"
+        android:text="  漫画排行榜"/>
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swiperefresh_layout"
         android:layout_width="match_parent"

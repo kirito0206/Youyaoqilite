@@ -141,7 +141,7 @@ class CartoonDaoOpe private constructor() {
     fun updateData(context: Context?, cartoon: Cartoon) {
         DbManager.getInstance(context!!)?.getDaoSession(context)?.cartoonDao?.update(cartoon)
         if (!cartoon.history && !cartoon.collected)
-            DbManager.getInstance(context!!)?.getDaoSession(context)?.cartoonDao?.delete(cartoon)
+            DbManager.getInstance(context)?.getDaoSession(context)?.cartoonDao?.delete(cartoon)
     }
 
 

@@ -21,7 +21,7 @@ class ReadFragment(var image : String) : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         //fragBinding = FragmentReadBinding.inflate(layoutInflater)
-        val view = inflater!!.inflate(R.layout.fragment_read, container, false)
+        val view = inflater.inflate(R.layout.fragment_read, container, false)
         Glide.with(this).load(image).error(R.mipmap.ic_launcher).into(view.read_image)
         return view
     }

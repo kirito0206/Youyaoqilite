@@ -57,7 +57,7 @@ class SearchFragment : Fragment() {
 
     private fun init(){
         fragBinding.searchButton.text = "搜索"
-        fragBinding.searchEdit.hint = "镇魂"
+        fragBinding.searchEdit.hint = " 镇魂"
 
         val layoutManager = LinearLayoutManager(activity)
         fragBinding.searchRecycler.layoutManager = layoutManager
@@ -67,6 +67,10 @@ class SearchFragment : Fragment() {
         fragBinding.currentSearchGrid.adapter = SearchGridAdapter(MyApplication.getContext(),RanklistFragment.handler.textList)
         //搜索历史
         var search = pref.getString("historySearch","")
+        if (search == null || search.isEmpty())
+            fragBinding.historySearch.visibility = View.GONE
+        else
+            fragBinding.historySearch.visibility = View.VISIBLE
         var stringList  = search?.split('\n')
         fragBinding.historySearchGrid.adapter = SearchGridAdapter(MyApplication.getContext(),
             stringList as MutableList<String>?

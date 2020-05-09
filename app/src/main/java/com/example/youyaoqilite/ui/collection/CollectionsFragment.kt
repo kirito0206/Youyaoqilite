@@ -27,7 +27,7 @@ class CollectionsFragment : Fragment() {
             savedInstanceState: Bundle?
     ): View? {
         //fragBinding = FragmentCollectionBinding.inflate(layoutInflater)
-        val view = inflater!!.inflate(R.layout.fragment_collection, container, false)
+        val view = inflater.inflate(R.layout.fragment_collection, container, false)
         itemCollection = ItemCollection()
         itemHistory = ItemHistory()
         initViewPager(view)
