@@ -9,17 +9,26 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.*
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
+import com.example.youyaoqilite.MyApplication
 import com.example.youyaoqilite.R
+import com.example.youyaoqilite.adapter.GridAdapter
+import com.example.youyaoqilite.greendao.CartoonDaoOpe
 import com.example.youyaoqilite.ui.collection.items.ItemCollection
 import com.example.youyaoqilite.ui.collection.items.ItemHistory
 import com.google.android.material.tabs.TabLayoutMediator
+import kotlinx.android.synthetic.main.fragment_collection.*
 import kotlinx.android.synthetic.main.fragment_collection.view.*
+import kotlinx.android.synthetic.main.fragment_collection.view.collection_edit
 
-class CollectionsFragment : Fragment() {
+class CollectionsFragment : Fragment(),View.OnClickListener {
 
     //private lateinit var fragBinding: FragmentCollectionBinding
     private lateinit var itemCollection : Fragment
     private lateinit var itemHistory : Fragment
+    private lateinit var view0 : View
+    object static{
+        var flag = false
+    }
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -27,17 +36,24 @@ class CollectionsFragment : Fragment() {
             savedInstanceState: Bundle?
     ): View? {
         //fragBinding = FragmentCollectionBinding.inflate(layoutInflater)
-        val view = inflater.inflate(R.layout.fragment_collection, container, false)
+        view0 = inflater.inflate(R.layout.fragment_collection, container, false)
         itemCollection = ItemCollection()
         itemHistory = ItemHistory()
-        initViewPager(view)
-        initTabViewPager(view)
-        return view
+        initView()
+        initViewPager()
+        initTabViewPager()
+        return view0
         //return fragBinding.root
     }
 
-    private fun initViewPager(view : View){
-        view.view_pager.adapter = object : FragmentStateAdapter(this) {
+    private fun initView(){
+        view0.collection_delete.visibility = View.GONE
+        view0.collection_delete.setOnClickListener(this)
+        view0.collection_edit.setOnClickListener(this)
+    }
+
+    private fun initViewPager(){
+        view0.view_pager.adapter = object : FragmentStateAdapter(this) {
             override fun getItemCount(): Int {
                 return 2
             }
@@ -49,7 +65,7 @@ class CollectionsFragment : Fragment() {
             }
         }
 
-        view.view_pager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+        view0.view_pager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageScrollStateChanged(state: Int) {
                 super.onPageScrollStateChanged(state)
                 Log.d("123", "onPageScrollStateChanged: $state")
@@ -80,8 +96,8 @@ class CollectionsFragment : Fragment() {
         })*/
     }
 
-    private fun initTabViewPager(view : View) {
-        TabLayoutMediator(view.tab_layout, view.view_pager,
+    private fun initTabViewPager() {
+        TabLayoutMediator(view0.tab_layout,view0.view_pager,
             TabLayoutMediator.TabConfigurationStrategy { tab, position ->
                 if (position == 0)
                     tab.text = "收藏"
@@ -91,4 +107,39 @@ class CollectionsFragment : Fragment() {
         ).attach()
     }
 
+    override fun onClick(v: View?) {
+        if (v != null) {
+            when(v.id){
+                R.id.collection_edit -> editCollection()
+                R.id.collection_delete -> deleteCollection()
+            }
+        }
+    }
+
+    private fun editCollection(){
+        if (!static.flag){
+            static.flag = true
+            collection_edit.setImageResource(R.drawable.close)
+            collection_delete.visibility = View.VISIBLE
+            initViewPager()
+        }else{
+            static.flag = false
+            collection_delete.visibility = View.GONE
+            collection_edit.setImageResource(R.drawable.edit)
+            initViewPager()
+        }
+    }
+
+    private fun deleteCollection(){
+        var cartoonList = CartoonDaoOpe.getInstance().queryCollectionAll(activity)
+        for (i in 0 until GridAdapter.gridStatic.deleteList.size){
+            var index = GridAdapter.gridStatic.deleteList[i]
+            if (cartoonList != null) {
+                CartoonDaoOpe.getInstance().deleteCollectedData(activity, cartoonList[index])
+            }
+        }
+        GridAdapter.gridStatic.deleteList.clear()
+        itemCollection = ItemCollection()
+        initViewPager()
+    }
 }

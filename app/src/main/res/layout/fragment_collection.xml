@@ -7,13 +7,34 @@
     android:orientation="vertical"
     tools:context=".ui.collection.CollectionsFragment">
 
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tab_layout"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:tabTextColor="@android:color/white"
-        app:tabIndicatorColor="@android:color/white"
-        android:background="@color/colorAccent"/>
+        android:background="@color/colorAccent"
+        android:orientation="horizontal">
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tab_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:tabTextColor="@android:color/white"
+            app:tabIndicatorColor="@android:color/white"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"/>
+        <ImageView
+            android:id="@+id/collection_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@id/collection_edit"
+            android:src="@drawable/delete"/>
+        <ImageView
+            android:id="@+id/collection_edit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/edit"/>
+    </RelativeLayout>
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/view_pager"
         android:layout_width="match_parent"

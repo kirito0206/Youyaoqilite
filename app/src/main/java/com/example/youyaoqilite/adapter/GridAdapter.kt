@@ -6,16 +6,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
+import android.widget.CompoundButton
 import com.bumptech.glide.Glide
 import com.example.youyaoqilite.MyApplication
 import com.example.youyaoqilite.R
 import com.example.youyaoqilite.data.Cartoon
 import com.example.youyaoqilite.databinding.ItemGridLayoutBinding
 import com.example.youyaoqilite.ui.DetailActivity
+import com.example.youyaoqilite.ui.collection.CollectionsFragment
 
-class GridAdapter(val context: Context, private var cartoonList: MutableList<Cartoon>?): BaseAdapter() {
+class GridAdapter(val context: Context, private var cartoonList: MutableList<Cartoon>?): BaseAdapter(),CompoundButton.OnCheckedChangeListener {
 
-            // 单元格的 View
+    object gridStatic{
+        var deleteList = ArrayList<Int>()
+    }
+        // 单元格的 View
         override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         var gridBinding = ItemGridLayoutBinding.inflate(LayoutInflater.from(parent?.context), parent, false)
 
@@ -23,7 +28,13 @@ class GridAdapter(val context: Context, private var cartoonList: MutableList<Car
             var data = cartoonList?.get(position)
             Glide.with(MyApplication.getContext()).load(data?.cover).error(R.mipmap.ic_launcher).override(1200, 400).into(gridBinding.gridImage)
             gridBinding.gridName.text = data?.name
-            //gridBinding.gridHistory.text = data?.
+            if (CollectionsFragment.static.flag){
+                gridBinding.gridDelete.visibility = View.VISIBLE
+                gridBinding.gridDelete.tag = position
+                gridBinding.gridDelete.setOnCheckedChangeListener(this)
+            }
+            else
+                gridBinding.gridDelete.visibility = View.GONE
             gridBinding.root.setOnClickListener(View.OnClickListener {
                 var cartoon = cartoonList?.get(position)
                 var intent = Intent()
@@ -60,5 +71,13 @@ class GridAdapter(val context: Context, private var cartoonList: MutableList<Car
     // 在这个示例中不用，Android 要求实现此方法
     override fun getItemId(position: Int): Long {
         return 0
+    }
+
+    override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
+        if (buttonView != null)
+        if (isChecked)
+            gridStatic.deleteList.add(buttonView.tag as Int)
+        else
+            gridStatic.deleteList.remove(buttonView.tag as Int)
     }
 }
